@@ -5,7 +5,7 @@ model = MultipleLinearRegression()
 
 
 # ---- configuration ----
-epochs = 100
+epochs = 1000000
 learning_rate = 0.01
 
 
@@ -31,10 +31,13 @@ for epoch in range(epochs):
 
     weights, bias = model.train(X, y, learning_rate)
 
+    mse = model.calculate_mse(X, y)
+
     print(
         f"Epoch {epoch + 1}: "
         f"Weights = {weights}, "
-        f"Bias = {bias}"
+        f"Bias = {bias}, "
+        f"MSE = {mse}"
     )
 
 

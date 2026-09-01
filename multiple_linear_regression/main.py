@@ -98,3 +98,13 @@ class MultipleLinearRegression:
         weighted_sum += self.bias
 
         return weighted_sum
+
+    def calculate_mse(self, X, y):
+        total_error = 0
+
+        for index in range(len(X)):
+            prediction = self.calculate_weighted_sum(X[index])
+            error = prediction - y[index]
+            total_error += error ** 2
+
+        return total_error / len(X)
