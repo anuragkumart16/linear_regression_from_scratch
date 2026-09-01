@@ -4,58 +4,97 @@ class MultipleLinearRegression:
         self.bias = 0
 
     def get_attribute(self):
-        return (self.weights,self.bias)
+        return self.weights, self.bias
 
-    def init_weights(self,X):
-        for element in range(len(X)):
+    def init_weights(self, X):
+        for _ in range(len(X)):
             self.weights.append(0)
 
-    def calculate_weighted_sum(self,X):
+    def calculate_weighted_sum(self, X):
         weighted_sum = 0
+
         for index in range(len(X)):
-            weighted_sum += X[index]*self.weights[index]
+            weighted_sum += X[index] * self.weights[index]
+
         weighted_sum += self.bias
+
         return weighted_sum
 
+    def train(self, X, y, learning_rate):
 
-    def train(self,X,y,learning_rate):
-        weighted_sum  = self.calculate_weighted_sum(X)
-        error = weighted_sum - y 
-        change_in_weights = []
+        number_of_samples = len(X)
+
+        # --------------------------------
+        # 1. Calculate predictions
+        # --------------------------------
+
+        predictions = []
 
         for x in X:
-            gradient = 2 * error * x
-            change_in_weights.append(gradient) 
+            prediction = self.calculate_weighted_sum(x)
+            predictions.append(prediction)
 
-        # update weights 
-        for index in range(len(change_in_weights)):
+        # --------------------------------
+        # 2. Calculate errors
+        # --------------------------------
+
+        errors = []
+
+        for prediction, actual in zip(predictions, y):
+            error = prediction - actual
+            errors.append(error)
+
+        # --------------------------------
+        # 3. Calculate gradients
+        # --------------------------------
+
+        change_in_weights = []
+
+        for feature_index in range(len(self.weights)):
+            gradient = 0
+
+            for sample_index in range(number_of_samples):
+                gradient += errors[sample_index] * X[sample_index][feature_index]
+
+            gradient *= 2
+            gradient /= number_of_samples
+
+            change_in_weights.append(gradient)
+
+        # --------------------------------
+        # 4. Calculate bias gradient
+        # --------------------------------
+
+        bias_gradient = 0
+
+        for error in errors:
+            bias_gradient += error
+
+        bias_gradient *= 2
+        bias_gradient /= number_of_samples
+
+        # --------------------------------
+        # 5. Update weights
+        # --------------------------------
+
+        for index in range(len(self.weights)):
             self.weights[index] -= learning_rate * change_in_weights[index]
 
-        self.bias -= learning_rate * 2 * error
+        # --------------------------------
+        # 6. Update bias
+        # --------------------------------
 
-        return self.weights,self.bias
+        self.bias -= learning_rate * bias_gradient
 
-    def predict(self,X):
+        return self.weights, self.bias
+
+    def predict(self, X):
+
         weighted_sum = 0
-        for x,weights in zip(X,self.weights):
-            weighted_sum += x*weights
+
+        for x, weight in zip(X, self.weights):
+            weighted_sum += x * weight
 
         weighted_sum += self.bias
+
         return weighted_sum
-
-    
-
-        
-
-
-
-
-
-
-
-
-
-        
-
-
-
